@@ -1,0 +1,15 @@
+stages:
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+    - insurance_data.csv
+    - src/preprocess.py
+    outs:
+    - clean_data.csv
+  train:
+    cmd: python src/train.py
+    deps:
+    - clean_data.csv
+    - src/train.py
+    outs:
+    - model.pkl

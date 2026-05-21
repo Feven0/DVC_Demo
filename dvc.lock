@@ -1,0 +1,34 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+    - path: insurance_data.csv
+      hash: md5
+      md5: 1846c9c80019e93300c46191738efbe9
+      size: 1342065
+    - path: src/preprocess.py
+      hash: md5
+      md5: 6cc4dee7d40789e8ebdfd2a5b1ee8529
+      size: 607
+    outs:
+    - path: clean_data.csv
+      hash: md5
+      md5: f656784512b8722a98e22059c9810b20
+      size: 1190838
+  train:
+    cmd: python src/train.py
+    deps:
+    - path: clean_data.csv
+      hash: md5
+      md5: f656784512b8722a98e22059c9810b20
+      size: 1190838
+    - path: src/train.py
+      hash: md5
+      md5: e22556e4101d48a4c828d09574581289
+      size: 889
+    outs:
+    - path: model.pkl
+      hash: md5
+      md5: 61ef827be2a489cf50c82e7ed2385f5b
+      size: 2770329
