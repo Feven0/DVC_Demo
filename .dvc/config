@@ -1,4 +1,6 @@
 [core]
-    remote = myremote
+    remote = localstorage
 ['remote "myremote"']
     url = ../dvc-storage
+['remote "localstorage"']
+    url = c:\Users\mesfi\OneDrive\Documents\KAIM\Week 3\dvc-storage
