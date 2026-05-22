@@ -15,20 +15,22 @@ class InsuranceDataLoader:
         self.file_path = file_path
         self.df = None
 
-    def load_data(self) -> pd.DataFrame:
+    def load_data(self, chunksize: int = 100000) -> pd.DataFrame:
         """
-        Loads the pipe-separated insurance dataset.
+        Loads the pipe-separated insurance dataset in chunks to optimize memory.
         """
         if not os.path.exists(self.file_path):
             raise FileNotFoundError(f"Data file not found at: {self.file_path}")
         
-        logger.info(f"Loading data from {self.file_path}...")
+        logger.info(f"Loading data from {self.file_path} in chunks of {chunksize}...")
         
-        # Load pipe-separated file
-        self.df = pd.read_csv(self.file_path, sep='|', low_memory=False)
-        
-        # Strip whitespaces from column names
-        self.df.columns = [col.strip() for col in self.df.columns]
+        chunks = []
+        for chunk in pd.read_csv(self.file_path, sep='|', chunksize=chunksize, low_memory=False):
+            # Clean whitespaces in column names for the chunk
+            chunk.columns = [col.strip() for col in chunk.columns]
+            chunks.append(chunk)
+            
+        self.df = pd.concat(chunks, ignore_index=True)
         
         logger.info(f"Successfully loaded dataset with shape: {self.df.shape}")
         return self.df
