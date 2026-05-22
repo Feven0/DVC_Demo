@@ -87,6 +87,61 @@ Two derived metrics are implemented to anchor the entire analysis:
    dvc pull
    ```
 
+## Data Version Control (DVC) Pipeline
+
+This project uses **DVC** to version-control datasets and ensure full reproducibility of the data pipeline.
+
+### How It Works
+
+The data goes through two tracked versions:
+
+| Version | Description | Git Commit Tag |
+| :--- | :--- | :--- |
+| **v1 (Raw)** | Original pipe-separated dataset as received | `v1: track raw insurance dataset with DVC` |
+| **v2 (Cleaned)** | Preprocessed with standardized types, derived `LossRatio` and `Margin` columns | `v2: track cleaned/preprocessed insurance dataset` |
+
+### Reproducing the Data Pipeline
+
+1.  **Pull the raw data** from the DVC remote:
+    ```bash
+    dvc pull
+    ```
+
+2.  **Run the preprocessing pipeline** to regenerate the cleaned dataset:
+    ```bash
+    dvc repro
+    ```
+    This executes the `preprocess` stage defined in `dvc.yaml`, which reads the raw `MachineLearningRating_v3.txt` and outputs the cleaned `insurance_data.csv` with derived metrics.
+
+3.  **Switch between data versions** using Git + DVC:
+    ```bash
+    # Check out the raw data version
+    git log --oneline  # find the v1 commit hash
+    git checkout <v1-commit-hash> -- data/insurance_data.csv.dvc
+    dvc checkout
+
+    # Check out the cleaned data version
+    git checkout <v2-commit-hash> -- data/insurance_data.csv.dvc
+    dvc checkout
+    ```
+
+4.  **Push new data versions** after modifications:
+    ```bash
+    dvc add data/insurance_data.csv
+    git add data/insurance_data.csv.dvc
+    git commit -m "v3: description of changes"
+    dvc push
+    git push
+    ```
+
+### DVC Remote Storage
+
+The DVC remote is configured as a local directory outside the project:
+```
+Remote name: localstorage
+Path: C:\Users\mesfi\OneDrive\Documents\KAIM\Week 3\dvc-storage
+```
+
 ## Development and Testing
 
 *   **Linting**: Run `flake8 src/` to check code style.
